@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/Cards_Project_Copy/static/css/main.d4cc7cd0.css",
+    "main.js": "/Cards_Project_Copy/static/js/main.2529cd24.js",
+    "index.html": "/Cards_Project_Copy/index.html",
+    "static/media/Union.svg": "/Cards_Project_Copy/static/media/Union.4e9697bddb9a118f1e55823c957e9d25.svg",
+    "main.d4cc7cd0.css.map": "/Cards_Project_Copy/static/css/main.d4cc7cd0.css.map",
+    "main.2529cd24.js.map": "/Cards_Project_Copy/static/js/main.2529cd24.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.d4cc7cd0.css",
+    "static/js/main.2529cd24.js"
+  ]
+}
