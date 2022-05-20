@@ -1,30 +1,23 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
-    ButtonCancel,
-    ButtonSave,
-    ButtonsBlock,
-    Close,
-    Input,
-    InputWrapper,
-    Modal,
-    ModalTextWrapper,
-    ModalWindow,
-    ModalWrapper,
-    WrapperTextAndClose
-} from "../../StylesComponents/ModalWrappers";
-import {colors} from "../../StylesComponents/Colors";
-import {FormWrapper, RememberMeWrapper, TextAuthWrapper} from "../../StylesComponents/AuthCardWrapper";
-import {createPackTC} from "../../../Thunk's/PacksThunk";
+    ButtonCancel, ButtonSave, ButtonsBlock, Close, Input, InputWrapper, Modal,
+    ModalTextWrapper, ModalWindow, ModalWrapper, WrapperTextAndClose
+} from '../../StylesComponents/ModalWrappers';
 import {useTypedDispatch} from "../../../Store-Reducers/Store";
+import {FormikErrorType, OnePacksType} from "../../../Types/PacksTypes";
+import {FormWrapper, RememberMeWrapper, TextAuthWrapper} from "../../StylesComponents/AuthCardWrapper";
+import {colors} from "../../StylesComponents/Colors";
+import {StyledCheckBox} from '../../LoginAndRegistration/Login/Login';
 import {useFormik} from "formik";
-import {FormikErrorType} from "../../../Types/PacksTypes";
-import {StyledCheckBox} from "../../LoginAndRegistration/Login/Login";
+import {updatePackTC} from "../../../Thunk's/PacksThunk";
+import styled from "styled-components";
 
-type AddPackModalType = {
+type EditPackModalType = {
+    el: OnePacksType
     setShow: (show: boolean) => void
 }
 
-export const AddPackModal = ({setShow}: AddPackModalType) => {
+export const EditPackModal = ({el, setShow}: EditPackModalType) => {
 
     const dispatch = useTypedDispatch();
     const maxLengthInput = 30;
@@ -41,10 +34,14 @@ export const AddPackModal = ({setShow}: AddPackModalType) => {
             return errors;
         },
         onSubmit: (values) => {
-            dispatch(createPackTC(values));
+            dispatch(updatePackTC(el._id, values));
             setShow(false);
         },
     });
+
+    useEffect(() => {
+        loginForm.setFieldValue('namePack', el.name);
+    }, []);
 
     return (
         <ModalWrapper>
@@ -52,12 +49,12 @@ export const AddPackModal = ({setShow}: AddPackModalType) => {
                 <FormWrapper onSubmit={loginForm.handleSubmit}>
                     <Modal>
                         <WrapperTextAndClose>
-                            <ModalTextWrapper>Add Pack</ModalTextWrapper>
+                            <ModalTextWrapper>Edit pack</ModalTextWrapper>
                             <Close onClick={closeModalClick}/>
                         </WrapperTextAndClose>
 
                         <InputWrapper>
-                            <TextAuthWrapper fontSz={13} opacity={0.5} color={colors.DarkBlue}>Name Pack</TextAuthWrapper>
+                            <TextAuthWrapper fontSz={13} opacity={0.5} color={colors.DarkBlue}>New Pack Name</TextAuthWrapper>
                             <Input maxLength={maxLengthInput}
                                    type="text"
                                    id="namePack"
@@ -80,8 +77,8 @@ export const AddPackModal = ({setShow}: AddPackModalType) => {
                                 Cancel
                             </ButtonCancel>
                             <ButtonSave type="submit"
-                                        disabled={!(loginForm.isValid && loginForm.dirty)}>
-                                Save
+                                        disabled={!(loginForm.isValid && loginForm.dirty) || el.name === loginForm.values.namePack}>
+                                Save change
                             </ButtonSave>
                         </ButtonsBlock>
                     </Modal>

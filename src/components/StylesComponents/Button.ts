@@ -15,6 +15,7 @@ export const Button = styled.button<{ width?: number, height?: number, bgColor?:
   :hover {
     opacity: 1;
   }: disabled {
+  cursor: no-drop;
   opacity: 0.5;
 }
 `;

@@ -8,7 +8,8 @@ import {
     ForgotPasswordDataType,
     NewPasswordDataType, NewNameAndAvatarType, ResponseUpdateDataType
 } from "../Types/AuthTypes";
-import {CreatePackType, PacksReqestType, ResponsePacksType} from "../Types/PacksTypes";
+import {CreatePackType, ParamsPacksType, ResponsePacksType} from "../Types/PacksTypes";
+import {CardsResponseType, RequestCardPostType, RequestCardsType, RequestCardUpdateType} from "../Types/CardTypes";
 
 export const instance = axios.create({
     baseURL: process.env.REACT_APP_BACK_URL || 'https://neko-back.herokuapp.com/2.0',
@@ -36,7 +37,7 @@ export const AuthAPI = {
                 message: `
 <div style="background-color: #2D2E46; padding: 15px; color: lavender">
 Password recovery link: 
-<a style="text-decoration:none; color: deepskyblue;" href='http://localhost:3001/#/set-new-password/$token$'>link</a></div>`
+<a style="text-decoration:none; color: deepskyblue;" href='https://artem-hvedinich.github.io/Card_Project/#/set-new-password/$token$'>link</a></div>`
             })
     },
     newPassword(password: string, resetPasswordToken: string) {
@@ -74,17 +75,33 @@ export const FileAPI = {
     }
 }
 
-export const CardAPI = {
-    getPacks(pageCount?: number, page?: number) {
-        return instance.get<PacksReqestType, { data: ResponsePacksType }>('/cards/pack', {params: {pageCount: pageCount, page: page}});
+export const PackAPI = {
+    getPacks(params: ParamsPacksType) {
+        return instance.get<ResponsePacksType>('/cards/pack', {params});
     },
     deletePack(id: string) {
         return instance.delete(`/cards/pack?id=${id}`);
     },
-    async updateCard() {
-        // return await instance.put(`/cards/card`, {card: updatedCard})
+    updatePack(cardsPack: { _id: string, name: string, private: boolean}) {
+        return instance.put(`/cards/pack`, {cardsPack})
     },
-    async createPack(cadsPack: { name?: string, deckCover?: string, private?: boolean }) {
-        return instance.post<CreatePackType, any, any>(`/cards/pack`, {cardsPack: cadsPack})
+    createPack(cardsPack: { name: string, private: boolean, deckCover?: string }) {
+        return instance.post<CreatePackType, any, any>(`/cards/pack`, {cardsPack})
+    },
+}
+
+
+export const CardsAPI = {
+    getCards(params: RequestCardsType) {
+        return instance.get<RequestCardsType, { data: CardsResponseType }>(`/cards/card`, {params});
+    },
+    deleteCard(id: string) {
+        return instance.delete(`/cards/card?id=${id}`);
+    },
+    createCard(card: RequestCardPostType) {
+        return instance.post<RequestCardPostType, any, any>(`/cards/card`, {card});
+    },
+    updateCard(card: RequestCardUpdateType) {
+        return instance.put<RequestCardUpdateType, any, any>(`/cards/card`, {card});
     },
 }

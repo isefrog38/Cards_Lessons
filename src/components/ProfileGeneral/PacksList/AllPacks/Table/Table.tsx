@@ -1,13 +1,15 @@
-import React from 'react';
-import s from "./Table.module.css";
+import React, {useState} from 'react';
 import {OnePacksType} from "../../../../../Types/PacksTypes";
-import styled from "styled-components";
-import {ActiveButtonsTable} from "./ActiveButtonsTable/ActiveButtonsTable";
 import {LoadingTable} from "../../../../Common/Loading/LoadingTable";
+import {TableElemets} from "./TableElements/TableElemets";
+import {PacksBlock} from '../../../../StylesComponents/CardsWrapper';
+import styled from "styled-components";
+import {setFilteredColumnAC} from "../../../../../Store-Reducers/Packs-Reducer";
+import {useTypedDispatch} from "../../../../../Store-Reducers/Store";
+import {getAllPacksTC} from "../../../../../Thunk's/PacksThunk";
+
 
 type CardTableType = {
-    onEditClick: (id: string) => void
-    onLearnClick: (id: string) => void
     itemPack: OnePacksType[]
     isFetching: boolean
 };
@@ -19,48 +21,91 @@ const TableList = [
     {id: 5, name: "Actions"},
 ];
 
-export const CardTable = ({itemPack, isFetching, onEditClick, onLearnClick}: CardTableType) => {
+export const CardTable = ({itemPack, isFetching}: CardTableType) => {
+
+    const [up, setUp] = useState<boolean>(false);
+    const dispatch = useTypedDispatch();
+
+    const onFilterColumnClick = () => {
+        setUp(!up);
+        dispatch(setFilteredColumnAC());
+        dispatch(getAllPacksTC());
+    }
 
     return (
         <PacksBlock>
-            {isFetching
-                ? <LoadingTable/>
-                : <div className={s.table}>
-                    <div className={s.item_columns}>
-                        <div className={s.item}>
-                            {TableList.map(el => <span className={s.name_column_one} key={el.id}>{el.name}</span>)}
-                        </div>
-                    </div>
-                    {itemPack.map(el =>
-                        <div className={s.elements_table_general_block}>
-                            <div key={el._id} className={s.li}>
-                                <span className={s.item}>{el.name}</span>
-                                <span className={s.item}>{el.cardsCount}</span>
-                                <span className={s.item}>{el.updated.slice(0, 10).replace(/^(\d+)-(\d+)-(\d+)$/, `$3.$2.$1`)}</span>
-                                <span className={s.item}>Some Long Name</span>
-                                <span className={s.item}>
-                                <ActiveButtonsTable id={el._id}
-                                                    onLearnClick={onLearnClick}
-                                                    onEditClick={onEditClick}
-                                />
-                            </span>
-                            </div>
-                        </div>
-                    )
+            <Table>
+                <ItemColumn>
+                    {TableList.map(el => (
+                        <OneColumn>
+                            {el.name}
+                            {el.name === 'Last Updated' && <Span up={up} onClick={onFilterColumnClick}/>}
+                        </OneColumn>
+                    ))
                     }
-                </div>
-            }
+                </ItemColumn>
+                {isFetching
+                    ? <LoadingTable/>
+                    : itemPack.map(el => <TableElemets key={el._id} el={el}/>)
+                }
+            </Table>
         </PacksBlock>
     );
 };
 
 
-const PacksBlock = styled.div`
+const Span = styled.span<{ up?: boolean }>`
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  height: 100%;
+  margin-top: 7px;
+  border: solid #242524;
+  border-width: 0 0.2vw 0.2vw 0;
+  padding: 0.2vw;
+  margin-left: 0.3vw;
+  transform: rotate(${({up}) => up ? 225 : 45}deg);
+  cursor: pointer;
+  transition: 1s all;
+
+`;
+
+const Table = styled.div`
   height: auto;
-  overflow: hidden;
-  min-height: 70%;
-  max-height: 70%;
+`;
+
+const ItemColumn = styled.div`
   width: 100%;
-  margin-top: 2vw;
-  box-shadow: -0.1vw -0.1vw 0.5vw #cbcbcb,
-  0.1vw 0.1vw 0.5vw 0.1vw #cbcbcb;`
+  height: 2.5vw;
+  background-color: #ECECF9;
+  font-size: 1vw;
+  font-weight: 600;
+  display: flex;
+  align-items: center;`
+
+const OneColumn = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 0 1.2vw;
+  width: 100%;
+
+  :nth-child(1) {
+    min-width: 25%;
+    justify-content: start;
+  }
+
+  :nth-child(2) {
+    max-width: 13%;
+  }
+
+  :nth-child(3) {
+    max-width: 16%;
+  }
+
+  :nth-child(4) {
+    min-width: 20%;
+  }
+
+  :nth-child(5) {
+    min-width: 20%;
+  }`

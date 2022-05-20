@@ -1,31 +1,46 @@
-import React, {useState} from 'react';
+import React, {useEffect} from 'react';
 import {useAppSelector, useTypedDispatch} from "../../../Store-Reducers/Store";
-import {CardsInitialStateType, setChangeFilteredPageAC} from "../../../Store-Reducers/Packs-Reducer";
-import {AllPacks} from "./AllPacks/AllPacks";
-import {FilterCardsType} from "../../../Types/PacksTypes";
 import {
-    GeneralProfileWrapper,
-    TitleProfileWrapper,
-    ToolsProfileBlock
-} from '../../StylesComponents/ProfileAndPacksWrapper';
+    PacksInitialStateType,
+    setChangeFilteredPageAC,
+    setMinCardsFilterAC,
+    setUserIdAC
+} from "../../../Store-Reducers/Packs-Reducer";
+import {AllPacks} from "./AllPacks/AllPacks";
+import {GeneralProfileWrapper, TitleProfileWrapper, ToolsProfileBlock} from '../../StylesComponents/ProfileAndPacksWrapper';
 import styled from 'styled-components';
 import {colors} from "../../StylesComponents/Colors";
 import {NotAuthRedirect} from "../../../UtilsFunction/RedirectFunction";
-import {DoubleRange} from "../../../UtilsFunction/DoubleRange";
+import {initialStateAuthorizationType} from "../../../Store-Reducers/Auth-Reducer";
+import {DoubleRange} from "../../Common/DoubleRange";
+import {getAllPacksTC} from "../../../Thunk's/PacksThunk";
+import {FilterPacksType} from "../../../Types/PacksTypes";
 
 export const PacksList = NotAuthRedirect(() => {
-    const dispatch = useTypedDispatch();
-    const stateCards = useAppSelector<CardsInitialStateType>(state => state.CardsReducer);
 
-    const onClickHandler = (valueFilter: FilterCardsType) => {
-        dispatch(setChangeFilteredPageAC({valueFilter}))
+    const statePack = useAppSelector<PacksInitialStateType>(state => state.PacksReducer);
+    const {_id} = useAppSelector<initialStateAuthorizationType>(state => state.AuthorizationReducer);
+    const dispatch = useTypedDispatch();
+
+    useEffect(() => {
+        dispatch(setUserIdAC({userId: ""}));
+        dispatch(setChangeFilteredPageAC({valueFilter: 'All'}));
+    }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(getAllPacksTC());
+    },[statePack.params, statePack.packsType]);
+
+    const onClickHandler = (valueFilter: FilterPacksType) => {
+        dispatch(setChangeFilteredPageAC({valueFilter}));
+        if (valueFilter === 'My' && _id) {
+            dispatch(setUserIdAC({userId: _id}));
+        } else {
+            dispatch(setUserIdAC({userId: ""}));
+        }
     };
 
-
-    const active = stateCards.filter === "All";
-
-    const [valueMin, setValueMin] = useState(0)
-    const [valueMax, setValueMax] = useState(50)
+    const active = statePack.packsType === "All";
 
     return (
         <GeneralProfileWrapper>
@@ -43,15 +58,17 @@ export const PacksList = NotAuthRedirect(() => {
                     </ButtonWrapper>
                 </ShowPacks>
 
+
                 <NumberCards>
                     <TitleProfileWrapper fontSz={0.8}>Number of cards</TitleProfileWrapper>
-                    <DoubleRange onChangeRange={setValueMin}
-                                 onChangeRange2={setValueMax}
-                                 valueMin={valueMin}
-                                 valueMax={valueMax}/>
+                    {/*<DoubleRange paramsMin={statePack.params.min} paramsMax={statePack.params.max}*/}
+                    {/*             minCardsCount={statePack.minCardsCount} maxCardsCount={statePack.maxCardsCount}*/}
+                    {/*             dispatchAction={setMinCardsFilterAC}/>*/}
                 </NumberCards>
             </ToolsProfileBlock>
-            <AllPacks/>
+
+            <AllPacks namePage={"Packs List"}/>
+
         </GeneralProfileWrapper>
     )
 });
@@ -62,7 +79,8 @@ const ShowPacks = styled.div`
   align-items: center;
   justify-content: space-around;
   width: 100%;
-  height: 7vw;`
+  height: 7vw;
+`;
 
 const NumberCards = styled.div`
   display: flex;
@@ -70,9 +88,11 @@ const NumberCards = styled.div`
   align-items: center;
   justify-content: space-around;
   width: 100%;
-  height: 5vw;`
+  height: 5vw;
+`;
 const ButtonWrapper = styled.div`
-  display: flex;`
+  display: flex;
+`;
 
 const Button = styled.button<{ active: boolean }>`
   width: 4vw;

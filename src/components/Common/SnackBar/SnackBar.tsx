@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
 import "./SnackBar.css";
 import {useDispatch,} from "react-redux";
-import {TypedDispatch, useAppSelector} from "../../Store-Reducers/Store";
-import {AppInitialStateType, setAppErrorMessageAC, setAppSuccessMessageAC} from "../../Store-Reducers/App-Reducer";
+import {TypedDispatch, useAppSelector} from "../../../Store-Reducers/Store";
+import {AppInitialStateType, setAppErrorMessageAC, setAppSuccessMessageAC} from "../../../Store-Reducers/App-Reducer";
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

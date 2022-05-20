@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    AddCardInputWrapper,
     ButtonCancel,
     ButtonSave,
     ButtonsBlock,
@@ -13,35 +14,38 @@ import {
     WrapperTextAndClose
 } from "../../StylesComponents/ModalWrappers";
 import {colors} from "../../StylesComponents/Colors";
-import {FormWrapper, RememberMeWrapper, TextAuthWrapper} from "../../StylesComponents/AuthCardWrapper";
-import {createPackTC} from "../../../Thunk's/PacksThunk";
+import {FormWrapper, TextAuthWrapper} from "../../StylesComponents/AuthCardWrapper";
 import {useTypedDispatch} from "../../../Store-Reducers/Store";
 import {useFormik} from "formik";
-import {FormikErrorType} from "../../../Types/PacksTypes";
-import {StyledCheckBox} from "../../LoginAndRegistration/Login/Login";
+import {CardFormikErrorType} from "../../../Types/CardTypes";
+import {createCardTC} from "../../../Thunk's/CardsThunk";
 
-type AddPackModalType = {
+type AddCardModalType = {
+    cardsPack_id: string
     setShow: (show: boolean) => void
 }
 
-export const AddPackModal = ({setShow}: AddPackModalType) => {
+export const AddCardModal = ({setShow, cardsPack_id}: AddCardModalType) => {
 
     const dispatch = useTypedDispatch();
-    const maxLengthInput = 30;
+    const maxLengthInput = 100;
 
     const closeModalClick = () => setShow(false);
 
     const loginForm = useFormik({
-        initialValues: {namePack: '', private: false},
-        validate: (values: FormikErrorType) => {
-            const errors: FormikErrorType = {};
-            if (!values.namePack) {
-                errors.namePack = "Field is required";
+        initialValues: {question: '', answer: ''},
+        validate: (values: CardFormikErrorType) => {
+            const errors: CardFormikErrorType = {};
+            if (!values.question) {
+                errors.question = "Field is required";
+            }
+            if (!values.answer) {
+                errors.answer = "Field is required";
             }
             return errors;
         },
-        onSubmit: (values) => {
-            dispatch(createPackTC(values));
+        onSubmit: ({question, answer}) => {
+             dispatch(createCardTC({answer, question, cardsPack_id}));
             setShow(false);
         },
     });
@@ -52,28 +56,30 @@ export const AddPackModal = ({setShow}: AddPackModalType) => {
                 <FormWrapper onSubmit={loginForm.handleSubmit}>
                     <Modal>
                         <WrapperTextAndClose>
-                            <ModalTextWrapper>Add Pack</ModalTextWrapper>
+                            <ModalTextWrapper>Add Card</ModalTextWrapper>
                             <Close onClick={closeModalClick}/>
                         </WrapperTextAndClose>
 
                         <InputWrapper>
-                            <TextAuthWrapper fontSz={13} opacity={0.5} color={colors.DarkBlue}>Name Pack</TextAuthWrapper>
+                            <TextAuthWrapper fontSz={13} opacity={0.5} color={colors.DarkBlue}>Question</TextAuthWrapper>
                             <Input maxLength={maxLengthInput}
                                    type="text"
-                                   id="namePack"
-                                   placeholder={"New pack name"}
-                                   {...loginForm.getFieldProps("namePack")}
+                                   id="question"
+                                   placeholder={"Question"}
+                                   {...loginForm.getFieldProps("question")}
                             />
                         </InputWrapper>
-                        <RememberMeWrapper margin={20}>
-                            <StyledCheckBox width={30} height={30}
-                                            type={"checkbox"}
-                                            id="private"
-                                            {...loginForm.getFieldProps("private")}
+
+                        <AddCardInputWrapper>
+                            <TextAuthWrapper fontSz={13} opacity={0.5} color={colors.DarkBlue}>Answer</TextAuthWrapper>
+                            <Input maxLength={maxLengthInput}
+                                   type="text"
+                                   id="answer"
+                                   placeholder={"Answer"}
+                                   {...loginForm.getFieldProps("answer")}
                             />
-                            <TextAuthWrapper fontSz={17} opacity={1}
-                                             color={colors.DarkBlue}>Private</TextAuthWrapper>
-                        </RememberMeWrapper>
+                        </AddCardInputWrapper>
+
 
                         <ButtonsBlock>
                             <ButtonCancel onClick={closeModalClick}>

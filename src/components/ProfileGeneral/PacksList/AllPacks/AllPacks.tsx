@@ -1,47 +1,44 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {memo, useState} from 'react';
 import {useAppSelector, useTypedDispatch} from "../../../../Store-Reducers/Store";
-import {CardsInitialStateType} from "../../../../Store-Reducers/Packs-Reducer";
 import {CardTable} from "./Table/Table";
 import {ProfileWrapper, TitleProfileWrapper} from '../../../StylesComponents/ProfileAndPacksWrapper';
-import styled from "styled-components";
-import SerchImg from '../../../../Assets/Union.svg'
-import {colors} from "../../../StylesComponents/Colors";
-import {Pagination} from "./Pagination";
-import {getAllPacksTC, getOnePagePacksTC} from '../../../../Thunk\'s/PacksThunk';
+import {Pagination} from "../../../Common/Pagination";
 import {AddPackModal} from "../../../ModalWindow/AddPackModal/AddPackModal";
+import {PaginationBlock, SearchBlock} from '../../../StylesComponents/CardsWrapper';
+import {
+    getOnePagePacksAC,
+    PacksInitialStateType,
+    setPageCountAC,
+    setTitleForSearchAC
+} from "../../../../Store-Reducers/Packs-Reducer";
+import {getAllPacksTC} from "../../../../Thunk's/PacksThunk";
+import {SearchField} from "../../../Common/SearchInput/SearchInput";
+import {Button} from "../../../Common/Buttons/Button";
+import {PageSelect} from "../../../../UtilsFunction/PageSelector";
+import styled from "styled-components";
 
+type AllPacksType = {
+    namePage: string
+}
 
-export const AllPacks = () => {
+export const AllPacks = memo(({namePage}: AllPacksType) => {
 
-    const stateCard = useAppSelector<CardsInitialStateType>(state => state.CardsReducer);
-    const dispatch = useTypedDispatch();
-    const [value, setValue] = useState<string>("");
-    const [error, setError] = useState<string | null>(null);
+    const statePack = useAppSelector<PacksInitialStateType>(state => state.PacksReducer);
     const [showAddModal, setShowAddModal] = useState<boolean>(false);
 
-    useEffect(() => {
+    const dispatch = useTypedDispatch();
+
+    const addPackHandler = () => setShowAddModal(true);
+    const onPageChanged = (page: number) => {
+        dispatch(getOnePagePacksAC({page}));
         dispatch(getAllPacksTC());
-    }, []);
-
-    let pageCount = 10;
-
-    const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (error && error.trim() !== '') setError(null)
-        if (e.ctrlKey || e.key === "Enter") {
-        } else {
-            setError('Error value')
-        }
     };
 
-    const onChangeSearchHandler = (text: ChangeEvent<HTMLInputElement>) => {
-        setError(null)
-        setValue(text.currentTarget.value);
-    }
-    const addPackHandler = () => setShowAddModal(true);
-    const editPackHandler = (id: string) => {};
-    const learnPackHandler = (id: string) => {};
-
-    const onPageChanged = (numberPage: number) => dispatch(getOnePagePacksTC(numberPage));
+    const onChangeDebounceRequest = (title: string) => {
+        dispatch(getOnePagePacksAC({page: 1}));
+        dispatch(setTitleForSearchAC({title}));
+        dispatch(getAllPacksTC());
+    };
 
     return (
         <ProfileWrapper>
@@ -49,73 +46,42 @@ export const AllPacks = () => {
                 ? <AddPackModal setShow={setShowAddModal}/>
                 : <></>
             }
-            <TitleProfileWrapper fontSz={1.5}>Packs List</TitleProfileWrapper>
+            <TitleProfileWrapper fontSz={1.5}>{namePage}</TitleProfileWrapper>
 
             <SearchBlock>
-                <InputWrapper
-                    placeholder={"Search..."}
-                    onChange={(e) => onChangeSearchHandler(e)}
-                    value={value}
-                    onKeyPress={(e) => onKeyPress(e)}
+                <SearchField stateValue={statePack.params.packName}
+                             placeholder={"Search pack..."}
+                             onChangeWithDebounce={onChangeDebounceRequest}
                 />
-                <ButtonAddNewPack onClick={addPackHandler}>Add new pack</ButtonAddNewPack>
+                <Button name={'Add new pack'} onClick={addPackHandler}/>
             </SearchBlock>
 
-            <CardTable itemPack={stateCard.data.cardPacks}
-                       onEditClick={editPackHandler}
-                       onLearnClick={learnPackHandler}
-                       isFetching={stateCard.isFetching}/>
+            <CardTable itemPack={statePack.packs} isFetching={statePack.isFetching}/>
 
             <PaginationBlock>
-                <Pagination portionSize={pageCount}
-                            totalItemsCount={stateCard.data.cardPacksTotalCount}
-                            pageSize={stateCard.data.pageCount}
-                            onPageChanged={onPageChanged}
-                            currentPage={stateCard.data.page}/>
+                {statePack.cardPacksTotalCount > 10 &&
+                    <><Pagination portionSize={10}
+                                  totalItemsCount={statePack.cardPacksTotalCount}
+                                  pageSize={statePack.params.pageCount}
+                                  onPageChanged={onPageChanged}
+                                  currentPage={statePack.params.page}/>
+                        <ShowCardsPage>Show
+                            <PageSelect value={statePack.params.pageCount}
+                                        onChange={(page) => dispatch(setPageCountAC({pageCount: page}))}
+                                        items={[5, 10, 15, 20]}/>
+                            Cards per Page</ShowCardsPage>
+                    </>}
             </PaginationBlock>
+
+
         </ProfileWrapper>
     );
-};
+});
 
-
-const PaginationBlock = styled.div`
-  position: relative;
-  width: 100%;
-`
-const SearchBlock = styled.div`
+const ShowCardsPage = styled.div`
   display: flex;
-`
-const InputWrapper = styled.input`
-  height: 4vh;
-  width: 90%;
-  border-radius: 0.3vw;
-  margin-right: 2vw;
-  background: url(${SerchImg}) no-repeat scroll 0.5vw 0.5vw;
-  background-size: 1vw;
-  padding-left: 2vw;
-  font-size: 0.9vw;
-  border: 1px solid #D9D9F1;
-  opacity: 0.7;
-
-  :nth-child(1) {
-    background-color: #ECECF9;
-  }
-
-  :hover {
-    border: 1px solid #635D80;
-  }
-
-  :focus {
-    outline: none;
-    border: 1px solid #635D80;
-  }`
-const ButtonAddNewPack = styled.button`
-  width: 20%;
-  height: 2.4vw;
   font-size: 0.8vw;
-  background-color: ${colors.Blue};
-  color: ${colors.WhiteColor};
-  border-radius: 2vw;
-  letter-spacing: 0.7px;
-  border: none;
-  cursor: pointer;`
+  align-items: center;
+  justify-content: space-between;
+  width: 20%;`
+

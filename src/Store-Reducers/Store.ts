@@ -5,6 +5,7 @@ import thunkMiddleware, {ThunkDispatch} from "redux-thunk";
 import {AppReducer} from "./App-Reducer";
 import {AuthorizationReducer} from "./Auth-Reducer";
 import {PacksReducer} from "./Packs-Reducer";
+import {CardsReducer} from "./Cards-Reducer";
 
 export type AppRootStateType = ReturnType<typeof rootReducer>;
 
@@ -12,7 +13,8 @@ export type AppRootStateType = ReturnType<typeof rootReducer>;
 const rootReducer = combineReducers({
     AppReducer,
     AuthorizationReducer,
-    CardsReducer: PacksReducer,
+    CardsReducer,
+    PacksReducer,
 });
 
 export const store = configureStore({

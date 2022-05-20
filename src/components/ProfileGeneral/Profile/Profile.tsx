@@ -1,21 +1,32 @@
-import React, { useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from "styled-components";
 import {PersonalInfo} from "./PersonalInfo/PersonalInfo";
 import {NotAuthRedirect} from '../../../UtilsFunction/RedirectFunction';
-import {useAppSelector} from '../../../Store-Reducers/Store';
+import {useAppSelector, useTypedDispatch} from '../../../Store-Reducers/Store';
 import {initialStateAuthorizationType} from '../../../Store-Reducers/Auth-Reducer';
 import {colors} from '../../StylesComponents/Colors';
 import {
     GeneralProfileWrapper,
-    ProfileWrapper,
     TextProfileWrapper,
     TitleProfileWrapper, ToolsProfileBlock
 } from '../../StylesComponents/ProfileAndPacksWrapper';
+import {AllPacks} from "../PacksList/AllPacks/AllPacks";
+import {setUserIdAC} from "../../../Store-Reducers/Packs-Reducer";
+import {getAllPacksTC} from "../../../Thunk's/PacksThunk";
 
 export const Profile = NotAuthRedirect(() => {
-    const meAuth = useAppSelector<initialStateAuthorizationType>(s => s.AuthorizationReducer)
-    const [editMode, setEditMode] = useState<boolean>(false)
-    const avatar = meAuth.avatar ? meAuth.avatar : 'https://static.thenounproject.com/png/801390-200.png'
+
+    const meAuth = useAppSelector<initialStateAuthorizationType>(state => state.AuthorizationReducer);
+    const [editMode, setEditMode] = useState<boolean>(false);
+    const dispatch = useTypedDispatch();
+    const avatar = meAuth.avatar ? meAuth.avatar : 'https://static.thenounproject.com/png/801390-200.png';
+
+    useEffect(() => {
+        if (meAuth._id) {
+            dispatch(setUserIdAC({userId: meAuth._id}));
+        }
+        dispatch(getAllPacksTC());
+    }, []);
 
     return (
         <>
@@ -30,9 +41,9 @@ export const Profile = NotAuthRedirect(() => {
                         {editMode && <PersonalInfo active={editMode} avatar={avatar} setEditMode={setEditMode}/>}
                     </PersonBlock>
                 </ToolsProfileBlock>
-                <ProfileWrapper>
 
-                </ProfileWrapper>
+                <AllPacks namePage={"My packs list"}/>
+
             </GeneralProfileWrapper>
         </>
     )

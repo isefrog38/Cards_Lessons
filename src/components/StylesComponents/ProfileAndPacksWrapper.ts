@@ -25,7 +25,9 @@ export const ToolsProfileBlock = styled.div`
 export const TitleProfileWrapper = styled.p<{ fontSz?: number }>`
   font-weight: 600;
   font-size: ${({fontSz}) => fontSz}vw;
-  color: #2D2E46`;
+  color: #2D2E46;
+  margin-bottom: 15px;
+`;
 
 export const TextProfileWrapper = styled.p<{ color?: string, fontSz: number, opacity?: number, textAlign?: string }>`
   width: 100%;

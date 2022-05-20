@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
-export const WrapperTextAndClose = styled.div`
+export const WrapperTextAndClose = styled.div<{c?: string}>`
   display: flex;
-  justify-content: space-between;
+  justify-content: ${({c}) => c ? c : 'space-between'};
 `;
 
 export const ModalTextWrapper = styled.div`
@@ -49,10 +49,11 @@ export const Modal = styled.div`
   padding: 24px;
   width: 100%;
   height: 100%;
-  background-color: white
+  background-color: white;
+  border-radius: 8px;
 `;
 
-export const ModalWrapper = styled.div`
+export const ModalWrapper = styled.div<{back?: string}>`
   position: absolute;
   top: 0;
   left: 0;
@@ -66,12 +67,20 @@ export const ModalWrapper = styled.div`
   transition: opacity 400ms ease-in;
 `;
 
+export const ModalWrapperClear = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`;
+
 export const ModalWindow = styled.div`
   position: relative;
   top: 30%;
   margin: 0 auto;
   width: 25%;
-  height: 33%;
+  height: 35%;
   background-color: #F9F9FE;
   border-radius: 5px;
 `;
@@ -86,6 +95,14 @@ export const InputWrapper = styled.div`
   @media (max-width: 1600px) {
     padding: 10% 0 0 0;
   }
+`;
+
+export const AddCardInputWrapper = styled.div`
+  padding: 10% 0 10% 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
 `;
 
 
@@ -116,8 +133,8 @@ export const ButtonsBlock = styled.div`
   }
 `;
 
-export const ButtonSave = styled.button`
-  width: 150px;
+export const ButtonSave = styled.button<{width?: string}>`
+  width: ${({width}) => width ? width: "150px"};
   height: 40px;
   background-color: #21268F;
   color: #ECECF9;
@@ -128,6 +145,7 @@ export const ButtonSave = styled.button`
   transition: all 1s;
 
   &:disabled {
+    cursor: no-drop;
     opacity: 0.5;
   }
 

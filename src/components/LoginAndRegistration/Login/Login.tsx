@@ -108,9 +108,9 @@ export const Login = IsLoginRedirect(() => {
 });
 
 
-const StyledCheckBox = styled.input`
-  width: 20px;
-  height: 20px;
+export const StyledCheckBox = styled.input<{width?: number, height?: number}>`
+  width: ${({width}) => width ? width : 20}px;
+  height: ${({height}) => height ? height : 20}px;
   margin-right: 10px;
 `;
 

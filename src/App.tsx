@@ -13,10 +13,12 @@ import {useDispatch} from "react-redux";
 import {AuthMeTC} from "./Thunk's/Auth-Thunk";
 import {PATH} from "./UtilsFunction/const-enum-path";
 import {AppWrapper} from "./components/StylesComponents/AuthCardWrapper";
-import {Snackbar} from "./components/SnackBar/SnackBar";
 import { Header } from './components/Header/Header';
 import {PacksList} from "./components/ProfileGeneral/PacksList/PacksList";
 import { Profile } from './components/ProfileGeneral/Profile/Profile';
+import {CardsPage} from "./components/CardsPage/CardsPage";
+import {LearnPackModal} from "./components/ModalWindow/LearnPackModal/LearnPackModal";
+import {Snackbar} from "./components/Common/SnackBar/SnackBar";
 
 export const App = () => {
 
@@ -45,6 +47,8 @@ export const App = () => {
                         <Route path={PATH.forgotPassword} element={<ForgotPassword/>}/>
                         <Route path={PATH.newPassword + "/:token"} element={<NewPassword/>}/>
                         <Route path={PATH.checkEmail} element={<CheckEmail/>}/>
+                        <Route path={PATH.cardsPack + `/:packId`} element={<CardsPage/>}/>
+                        <Route path={PATH.learnPack + `/:packId`} element={<LearnPackModal />}/>
                     </Routes>
                 </>
             }

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {NavLink} from "react-router-dom";
 import {PATH} from "../../UtilsFunction/const-enum-path";
 import {TitleAuthWrapper} from "../StylesComponents/AuthCardWrapper";
@@ -22,7 +22,7 @@ export const Header = () => {
         backgroundColor: navData.isActive ? `${colors.ActiveNavlinkColor}` : '',
         width: '50%',
         height: '100%',
-    })
+    });
 
     return (
         <HeaderWrapper>

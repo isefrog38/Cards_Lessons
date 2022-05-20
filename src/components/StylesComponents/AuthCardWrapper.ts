@@ -34,11 +34,13 @@ export const FormWrapper = styled.form<{ height?: number }>`
   align-items: center;
   height: ${({height}) => height}px`;
 
-export const RememberMeWrapper = styled.div`
+export const RememberMeWrapper = styled.div<{margin?: number}>`
   display: flex;
   width: 100%;
   justify-content: space-between;
-  align-items: center`;
+  align-items: center;
+  margin-top: ${({margin}) => margin ? margin : 0}px;
+`;
 
 export const ErrorWrapper = styled.div`
   width: 100%;
